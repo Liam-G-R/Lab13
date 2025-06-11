@@ -4,67 +4,55 @@ import HeaderComponent from "../../components/HeaderComponent";
 import { getAllCategoryService } from "../../services/CategoryService";
 import { createSerieService } from "../../services/SerieServices";
 
-
 const initData = {
     name: '',
     description: '',
-    img: '',
+    img: '',       // Esto será sobreescrito por el File
     category: '',
-}
+};
 
-
-function SerieFormPage(){
-
-
+function SerieFormPage() {
     const navigate = useNavigate();
     const [categories, setCategories] = useState([]);
     const [data, setData] = useState(initData);
-
+    const [file, setFile] = useState(null); 
 
     const loadCategories = async () => {
-        const resp  = await getAllCategoryService();
+        const resp = await getAllCategoryService();
         setCategories(resp.data);
     };
-   useEffect(()=>{
+
+    useEffect(() => {
         loadCategories();
     }, []);
 
-
-    const onChangeNombre = (e) => {
-        const nData = {...data, name: e.target.value}
-        setData(nData);
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setData({ ...data, [name]: value });
     };
 
-
-    const onChangeCategoria = (e) => {
-        const nData = {...data, description: e.target.value}
-        setData(nData);
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
     };
-
-
-    const onChangeRating = (e) => {
-        const nData = {...data, img: e.target.value}
-        setData(nData);
-    };
-
-
-    const onChangeReleaseDate = (e) => {
-        const nData = {...data, category: e.target.value}
-        setData(nData);
-    };
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('name', data.name);
+        formData.append('description', data.description);
+        formData.append('category', data.category);
+        if (file) {
+            formData.append('img', file);
+        }
+
         try {
-            await createSerieService(data);
-            console.log('Enviando', data);
+            await createSerieService(formData); 
             navigate('/series');
         } catch (error) {
             console.error(error);
         }
     };
-
 
     return (
         <>
@@ -73,49 +61,75 @@ function SerieFormPage(){
                 <div className="border-bottom pb-3 mb-3">
                     <h3>Nueva - Serie</h3>
                 </div>
-                <form onSubmit={handleSubmit} className="row">
+                <form onSubmit={handleSubmit} className="row" encType="multipart/form-data">
                     <div className="col-md-4">
-                        <img 
-                            id="fileImg"
-                            className="card-img-top" 
-                            src={"https://dummyimage.com/400x250/000/fff&text=imagen"} 
-                            alt="img" />
+                        <img
+                            className="card-img-top"
+                            src={file ? URL.createObjectURL(file) : "https://dummyimage.com/400x250/000/fff&text=imagen"}
+                            alt="preview"
+                        />
                     </div>
                     <div className="col-md-8">
                         <div className="mb-3">
                             <label htmlFor="inputName" className="form-label">Nombre</label>
-                            <input type="text" onChange={onChangeNombre} className="form-control" id="inputName" required />
+                            <input
+                                type="text"
+                                name="name"
+                                onChange={handleChange}
+                                className="form-control"
+                                id="inputName"
+                                value={data.name}
+                                required
+                            />
                         </div>
                         <div className="mb-3">
-                            <label htmlFor="inputCategory" className="form-label">Categoria</label>
-                            <select onChange={onChangeCategoria} className="form-select" id="inputCategory" required >
+                            <label htmlFor="inputDescription" className="form-label">Descripción</label>
+                            <textarea
+                                name="description"
+                                onChange={handleChange}
+                                className="form-control"
+                                id="inputDescription"
+                                value={data.description}
+                                required
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="inputCategory" className="form-label">Categoría</label>
+                            <select
+                                name="category"
+                                onChange={handleChange}
+                                className="form-select"
+                                id="inputCategory"
+                                value={data.category}
+                                required
+                            >
                                 <option value="">Seleccione una opción</option>
-                                {categories.map((item)=>(
-                                <option key={item.id} value={item.id}>{item.description}</option>
+                                {categories.map((item) => (
+                                    <option key={item.id} value={item.id}>{item.description}</option>
                                 ))}
                             </select>
                         </div>
                         <div className="mb-3">
-                            <label htmlFor="inputRating" className="form-label">Rating</label>
-                            <input type="number" onChange={onChangeRating} className="form-control" id="inputRating" min="1" max="10" required />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="inputReleaseDate" className="form-label">Rating</label>
-                            <input type="date" onChange={onChangeReleaseDate} className="form-control" id="inputReleaseDate" required />
-                        </div>
-                        <div className="mb-3">
                             <label htmlFor="inputImage" className="form-label">Imagen</label>
-                            <input type="file" className="form-control" id="inputImage" />
+                            <input
+                                type="file"
+                                name="img"
+                                className="form-control"
+                                id="inputImage"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                required
+                            />
                         </div>
                         <div className="mb-3">
-                            <button className="btn btn-primary me-2">Guardar</button> 
+                            <button className="btn btn-primary me-2">Guardar</button>
                             <Link className="btn btn-secondary" to="/series">Cancelar</Link>
                         </div>
                     </div>
                 </form>
             </div>
         </>
-    )
+    );
 }
 
-export default SerieFormPage
+export default SerieFormPage;
