@@ -7,7 +7,7 @@ import { createSerieService } from "../../services/SerieServices";
 const initData = {
     name: '',
     description: '',
-    img: '',       // Esto será sobreescrito por el File
+    img: '', 
     category: '',
 };
 
