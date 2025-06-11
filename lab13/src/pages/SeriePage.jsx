@@ -26,10 +26,10 @@ return (
           {series.map((serie)=>(
           <div key={serie.id} className="col-md-3 mb-3">
             <SerieComponent
-              codigo={serie.id}
-              nombre={serie.name}
-              categoria={serie.category_description}
-              imagen={"serie.png"}
+            codigo={serie.id}
+            nombre={serie.name}
+            categoria={serie.category_description}
+            imagen={"serie.png"}
            />
           </div>
           ))}

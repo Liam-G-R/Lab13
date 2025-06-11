@@ -6,6 +6,7 @@ import CategoryFormPage from "./pages/category/CategoryFormPage"
 import CategoryEditFormPage from "./pages/category/CategoryEditFormPage"
 import SeriePage from "./pages/SeriePage"
 import SerieFormPage from "./pages/serie/SerieFormPage"
+import SerieEditFormPage from "./pages/serie/Serie.EditFromPage"
 
 function App() {
 
@@ -19,6 +20,8 @@ function App() {
         <Route path="/categories/edit/:id" element={<CategoryEditFormPage />} />
         <Route path="/series" element={<SeriePage/>} />
         <Route path="/series/new" element={<SerieFormPage/>} />
+        <Route path="/series/edit/:id" element={<SerieEditFormPage />} />
+
       </Routes>
     </BrowserRouter>
   )
